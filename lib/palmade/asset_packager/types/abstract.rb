@@ -1,6 +1,7 @@
 module Palmade::AssetPackager::Types
   class Abstract
     DEFAULT_TARGET_PATH = 'compiled'
+    OPTIONS = [ 'include' ]
 
     class Error < StandardError; end
     class NotImplemented < Error; end
@@ -22,8 +23,8 @@ module Palmade::AssetPackager::Types
     def build
       raise NotImplemented, "Not implemented (build)"
     end
-    
-    def delete
+
+    def destroy
       File.delete(target_filename) if File.exists?(target_filename)
       File.delete(target_filename_z) if File.exists?(target_filename_z)
     end
@@ -42,14 +43,16 @@ module Palmade::AssetPackager::Types
     def options; @options ||= { }; end
     def assets; @assets ||= [ ]; end
 
-    def update(source_list)
-      source_list.each do |sl|
-        case sl
-        when Hash
-          options.update(sl)
-        when String
-          parse_source_line(sl)
-        end
+    def update_asset(source)
+      case source
+      when Hash
+        at_options = source.split(OPTIONS)
+        options.update(at_options) unless at_options.nil?
+        parse_source_hash(source) unless source.empty?
+      when String
+        parse_source_line(source)
+      when Array
+        source.each { |sl| update_asset(sl) }
       end
     end
 
@@ -70,7 +73,7 @@ module Palmade::AssetPackager::Types
       def target_filename
         File.join(target_path, "#{package_name}.#{asset_extension}")
       end
-      
+
       def target_filename_z
         File.join(target_path, "#{package_name}.#{asset_extension}.z")
       end
@@ -102,6 +105,10 @@ module Palmade::AssetPackager::Types
         line_options = line_params.size > 1 ? line_params[1, line_params.size - 1] : nil
 
         [ line_params[0], line_options ]
+      end
+      
+      def parse_source_hash(sh)
+        
       end
 
       def parse_source_line(sl)

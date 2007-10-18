@@ -25,34 +25,25 @@ module Palmade::AssetPackager::Parser
 
     yml_data = dir ? read_dir(src_name) : read_yml(src_name)
     yml_data.keys.each do |package_name|
-      sources[package_name] ||= { }
       build_package_asset_list(package_name, yml_data[package_name])
     end
-    
+
     post_parse
   end
 
   protected
     def post_parse
-      sources.keys.each do |package_name|
-        sp = sources[package_name]
-        sp.keys.each do |asset_type|
-          sp[asset_type].post_parse
-        end
-      end
+      sources.values.each { |am| am.post_parse }
     end
 
     def build_package_asset_list(package_name, pdata)
       sp = sources[package_name]
-
-      # asset types can be javascripts, stylesheets, images
-      pdata.keys.each do |asset_type|
-        klass = get_asset_type_class(asset_type)
-        unless klass.nil?
-          sp[asset_type] ||= klass.new(self, package_name, asset_root, logger)
-          sp[asset_type].update(pdata[asset_type])
-        end
+      if sp.nil?
+        sp = Palmade::AssetPackager::Manager.new(self, package_name, asset_root, logger)
+        sources[package_name] = sp
       end
+
+      sp.update_assets_from_yml(pdata)
     end
 end
 

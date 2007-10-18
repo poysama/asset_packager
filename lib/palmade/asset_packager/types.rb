@@ -1,10 +1,9 @@
 module Palmade::AssetPackager::Types; end
 
 class Palmade::AssetPackager::Base
-  protected
-    def get_asset_type_class(asset_type)
-      "Palmade::AssetPackager::Types::#{asset_type.classify}".constantize
-    end
+  def get_asset_type_class(asset_type)
+    "Palmade::AssetPackager::Types::#{asset_type.classify}".constantize
+  end
 end
 
 require File.join(File.dirname(__FILE__), 'types/abstract')

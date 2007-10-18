@@ -35,6 +35,9 @@ class Palmade::RailsPackager
     @asset_packager.delete
   end
 
+  def rails_attach
+  end
+
   def run(argv)
     logger.debug("** Initialize AssetPackager::Base")
     @asset_packager = Palmade::AssetPackager::Base.new(@logger)
@@ -48,13 +51,15 @@ class Palmade::RailsPackager
       raise ConfigNotFound, "Default configuration file(s) not found"
     end
 
-    case ARGV[0]
+    case argv[0]
     when 'build', nil
       build
     when 'rebuild'
       rebuild
     when 'delete'
       delete
+    when 'rails_attach'
+      rails_attach
     else
       raise UnknownCommand, "Unknown command (#{ARGV[0]})"
     end

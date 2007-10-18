@@ -28,3 +28,9 @@ require File.join(File.dirname(__FILE__), 'asset_packager/base')
 require File.join(File.dirname(__FILE__), 'asset_packager/types')
 require File.join(File.dirname(__FILE__), 'asset_packager/package')
 require File.join(File.dirname(__FILE__), 'asset_packager/parser')
+require File.join(File.dirname(__FILE__), 'asset_packager/manager')
+
+if defined?(ActionController && ActionView && RAILS_ROOT)
+  # ok, add RAILS extensions
+
+end

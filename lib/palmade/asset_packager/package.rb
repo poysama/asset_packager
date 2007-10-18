@@ -1,6 +1,6 @@
 module Palmade::AssetPackager::Package
   def find_package(package_name, asset_type = nil)
-    sp = sources[package_name]      
+    sp = sources[package_name]
     asset_type.nil? ? sp : sp[asset_type] unless sp.nil?
   end
 
@@ -8,17 +8,16 @@ module Palmade::AssetPackager::Package
     def build_package(package_name)
       logger.info("** Package build: #{package_name}")
 
-      sp = sources[package_name]
-      sp.keys.each do |asset_type|
-        logger.info("=> Asset type: #{package_name}.#{asset_type}")
-        sp[asset_type].build
+      sp = find_package(package_name)
+      unless sp.nil?
+        sp.build_package
       end
     end
 
-    def delete_package(package_name)
-      sp = sources[package_name]
-      sp.keys.each do |asset_type|
-        sp[asset_type].delete
+    def destroy_package(package_name)
+      sp = find_package(package_name)
+      unless sp.nil?
+        sp.destroy_package
       end
     end
 end
