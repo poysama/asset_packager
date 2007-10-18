@@ -1,0 +1,5 @@
+#!/usr/bin/env ruby
+
+USE_RAILS = true
+
+load File.join(File.dirname(__FILE__), 'asset_packer')
