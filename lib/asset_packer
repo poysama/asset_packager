@@ -1,9 +1,6 @@
 
 require 'palmade/asset_packager'
 
-PALMADE_DEFAULT_LOGGER = Logger.new($stdout)
-PALMADE_DEFAULT_LOGGER.level = Logger::DEBUG
-
 if defined?(USE_RAILS) && USE_RAILS
 	require 'palmade/rails_packager'
 	Palmade::RailsPackager.new(Dir.pwd).run(ARGV)

@@ -1,19 +1,24 @@
+require 'rubygems'
+require 'logger'
 require 'fileutils'
 
-# this library uses ActiveSupport methods
-unless defined?(ActiveSupport)
+unless defined?(PALMADE_DEFAULT_LOGGER)
+  PALMADE_DEFAULT_LOGGER = Logger.new($stdout)
+  PALMADE_DEFAULT_LOGGER.level = Logger::DEBUG
+end
+
+# this library uses the RailsExtensions methods
+unless defined?(Palmade::RailsExtensions)
   begin
-    as_dir = File.join(File.dirname(__FILE__), "../../../activesupport/lib")
-    raise LoadError unless File.exists?(as_dir) && File.exists?(File.join(as_dir, 'active_support.rb'))
+    re_dir = File.join(File.dirname(__FILE__), "../../../rails_extensions/lib")
+    raise LoadError unless File.exists?(re_dir) && File.exists?(File.join(re_dir, 'palmade/rails_extensions.rb'))
 
-    puts "Using local active_support package"
-    $:.unshift(as_dir)
-    require 'active_support'
+    puts "Using local rails_extensions package"
+    $:.unshift(re_dir)
+    require 'palmade/rails_extensions'
   rescue LoadError
-    require 'rubygems'
-    gem 'activesupport'
-
-    require 'active_support'
+    gem 'rails_extensions'
+    require 'palmade/rails_extensions'
   end
 end
 
