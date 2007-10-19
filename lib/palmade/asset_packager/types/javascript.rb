@@ -10,6 +10,8 @@ module Palmade::AssetPackager::Types
 
     def build
       logger.debug("Creating combined version (#{target_filename})")
+
+      FileUtils.mkpath(File.dirname(target_filename))
       File.open(target_filename, "w") do |f|
         assets.each do |a|
           partial = case a

@@ -6,6 +6,13 @@ class Palmade::RailsPackager
   class UnknownCommand < Error; end
 
   attr_accessor :logger
+  attr_reader :asset_packager
+
+  ASSET_EXTENSIONS = {
+    'javascripts' => 'js', 
+    'stylesheets' => 'css', 
+    'images' => 'png'
+  }
 
   def initialize(rails_root)
     @rails_root = rails_root
@@ -35,9 +42,6 @@ class Palmade::RailsPackager
     @asset_packager.delete
   end
 
-  def rails_attach
-  end
-
   def run(argv)
     logger.debug("** Initialize AssetPackager::Base")
     @asset_packager = Palmade::AssetPackager::Base.new(@logger)
@@ -51,7 +55,7 @@ class Palmade::RailsPackager
       raise ConfigNotFound, "Default configuration file(s) not found"
     end
 
-    case argv[0]
+    case (argv.is_a?(Array) ? argv[0] : argv)
     when 'build', nil
       build
     when 'rebuild'
@@ -61,7 +65,26 @@ class Palmade::RailsPackager
     when 'rails_attach'
       rails_attach
     else
-      raise UnknownCommand, "Unknown command (#{ARGV[0]})"
+      raise UnknownCommand, "Unknown command (#{argv[0]})"
     end
+  end
+
+  def rails_attach
+    ActionController::Base.rails_asset_packager = self
+  end
+
+  def create_am(controller)
+    Palmade::AssetPackager::Manager.new(asset_packager, 
+      controller.controller_path.gsub(/\//, '_'), asset_packager.asset_root, logger)
+  end
+
+  def create_instance_am(cont_obj)
+    Palmade::AssetPackager::Manager.new(asset_packager, 
+      controller.controller_path.gsub(/\//, '_') + '_instance', asset_packager.asset_root, logger)
+  end
+  
+  def asset_exists?(asset_type, asset_path)
+    File.exists?(File.join(asset_packager.asset_root, asset_type, asset_path + ".#{ASSET_EXTENSIONS[asset_type]}")) ||
+      File.exists?(File.join(asset_packager.asset_root, asset_type, asset_path))
   end
 end

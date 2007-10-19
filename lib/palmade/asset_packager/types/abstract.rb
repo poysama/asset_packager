@@ -37,21 +37,27 @@ module Palmade::AssetPackager::Types
     end
 
     def target_path
-      @target_path ||= File.join(asset_root, asset_type, DEFAULT_TARGET_PATH)
+      @target_path ||= File.join(asset_root, asset_type, DEFAULT_TARGET_PATH, package_name)
     end
 
     def options; @options ||= { }; end
     def assets; @assets ||= [ ]; end
 
-    def update_asset(source)
-      case source
-      when Hash
-        at_options = source.split(OPTIONS)
-        options.update(at_options) unless at_options.nil?
-        parse_source_hash(source) unless source.empty?
-      when String
-        parse_source_line(source)
-      when Array
+    def update_asset(*source)
+      if source.size == 1
+        source = source.first
+        case source
+        when Hash
+          at_options = source.split(OPTIONS)
+          options.update(at_options) unless at_options.nil?
+  
+          parse_source_hash(source) unless source.empty?
+        when String
+          parse_source_line(source)
+        when Array
+          source.each { |sl| update_asset(sl) }
+        end
+      else
         source.each { |sl| update_asset(sl) }
       end
     end
@@ -80,10 +86,12 @@ module Palmade::AssetPackager::Types
 
       def include_assets_from(package_name)
         logger.debug("Including assets from #{package_name}, #{asset_type} to #{@package_name}")
-        apt = @ap.find_package(package_name, asset_type)        
-        unless apt.nil?
-          assets.concat(apt.assets)
-        end
+        apt = @ap.find_package(package_name, asset_type)
+        include_assets(apt) unless apt.nil?
+      end
+
+      def include_assets(apt)
+        assets.concat(apt.assets)
       end
 
       def find_asset(a)
@@ -108,7 +116,7 @@ module Palmade::AssetPackager::Types
       end
       
       def parse_source_hash(sh)
-        
+        # TODO: !!!!
       end
 
       def parse_source_line(sl)
