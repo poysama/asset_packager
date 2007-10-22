@@ -21,6 +21,16 @@ class ActionController::Base
       end
     end
     
+    def asset_managers
+      asset_managers = [ ]
+      asset_managers << @asset_manager if defined?(@asset_manager) && !@asset_manager.nil?
+      if self != ActionController::Base
+        asset_managers += superclass.asset_managers
+      end
+
+      asset_managers
+    end
+
     def javascript_include(*sources)
       asset_include('javascripts', *sources)
     end
@@ -36,10 +46,7 @@ class ActionController::Base
     def before_filter_stylesheet(*sources)
       before_filter { |cont| cont.stylesheet_include(*sources) }
     end
-    
-    
-    protected
-    
+
     def asset_include(asset_type, *sources)
       asset_include_to_am(asset_manager(false, true), asset_type, *sources)
     end
@@ -53,6 +60,9 @@ class ActionController::Base
         am.update_asset(asset_type, sources[0])
       end
     end
+
+    
+    protected
 
     def process_with_asset_packager(*args)
       asset_before_process_hook(*args)

@@ -52,7 +52,9 @@ module Palmade::AssetPackager::Types
     def update_asset(source, source_options = { })
       case source
       when Hash
-        source_options.update(source.split(SOURCE_OPTIONS))
+        source.stringify_keys!
+        source_options.update(source.split!(SOURCE_OPTIONS) || { })
+
         parse_source_hash(source.stringify_keys, source_options)
       when String
         parse_source_line(source, source_options)
@@ -76,7 +78,31 @@ module Palmade::AssetPackager::Types
 
     def find_assets(asset_options)
       # options can be set, rendered
-      
+      found_assets = [ ]
+      assets.each do |asset|
+        incld = true
+
+        if incld && asset_options.include?('set')
+          unless asset.part_of_set?(asset_options['set'])
+            incld = false
+          end
+        end
+
+        if incld && asset_options.include?('rendered')
+          unless asset_options['rendered'] == asset.rendered
+            incld = false
+          end
+        end
+
+        found_assets << asset if incld
+      end
+
+      found_assets
+    end
+
+    def get_assets_from(package_name)
+      apt = @ap.find_package(package_name, asset_type)
+      apt.assets unless apt.nil?
     end
 
     protected
@@ -90,6 +116,7 @@ module Palmade::AssetPackager::Types
 
       def include_assets_from(package_name)
         logger.debug("Including assets from #{package_name}, #{asset_type} to #{@package_name}")
+
         apt = @ap.find_package(package_name, asset_type)
         include_assets(apt) unless apt.nil?
       end
@@ -124,7 +151,7 @@ module Palmade::AssetPackager::Types
         sh_options.assert_valid_keys(SOURCE_OPTIONS)
 
         if sh.include?('package')
-          assets << { :package => sh['package'], :options => sh_options }
+          assets << Palmade::AssetPackager::AssetBase.new(self, "package:#{sh['package']}", sh_options)
         end
       end
 
@@ -132,6 +159,7 @@ module Palmade::AssetPackager::Types
         sl_options.assert_valid_keys(SOURCE_OPTIONS)
 
         line_source, line_options = split_options(sl)
+        sl_options.update({ :line_options => line_options }) unless line_options.nil? || line_options.empty?
 
         # full-path, relative to ASSET_ROOT
         if line_source =~ /^(\/([^\/]+\/)+)(.*)$/
@@ -148,11 +176,7 @@ module Palmade::AssetPackager::Types
 
         source_names = source_name.split('|')
         for source_name in source_names
-          if line_options
-            assets << { :source => File.join(url_path, source_name), :line_options => line_options, :options => sl_options }
-          else
-            assets << { :source => File.join(url_path, source_name), :options => sl_options }
-          end
+          assets << Palmade::AssetPackager::AssetBase.new(self, File.join(url_path, source_name), sl_options)
         end
       end
   end

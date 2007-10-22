@@ -84,7 +84,7 @@ class Palmade::RailsPackager
 
   def create_instance_am(cont_obj)
     Palmade::AssetPackager::Manager.new(asset_packager, 
-      controller.controller_path.gsub(/\//, '_') + '_instance', asset_packager.asset_root, logger)
+      cont_obj.controller_path.gsub(/\//, '_') + '_instance', asset_packager.asset_root, logger)
   end
   
   def asset_exists?(asset_type, asset_path)

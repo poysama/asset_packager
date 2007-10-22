@@ -7,10 +7,11 @@ class ActionView::Base
     asset_tags('stylesheets', options)
   end
   
+  
   protected
   
   def asset_tags(asset_type, options)
-    asset_options = { :rendered => false, :mark_rendered => true }
+    asset_options = { :rendered => false }
     asset_options.update(options)
 
     case
@@ -20,19 +21,49 @@ class ActionView::Base
       asset_options[:package] = options[:package]
     end
 
-    unless asset_manager.nil?
-      assets = asset_manager.find_assets(asset_type, asset_options.stringify_keys)
-      assets.each do |asset|
-        
-      end unless assets.nil? || assets.empty?
+    assets = spider_am(asset_type, asset_options)
+    assets.collect do |asset|
+      asset.rendered = true
+
+      case asset.source
+      when String
+        render_asset(asset_type, asset.source)
+      when Array
+        asset.source.collect do |as|
+          render_asset(asset_type, as)
+        end.join("\n")
+      end
+    end.join("\n") unless assets.nil? || assets.empty?    
+  end
+
+
+  private
+
+  def render_asset(asset_type, as)
+    case asset_type
+    when 'javascripts'
+      javascript_include_tag(as)
+    when 'stylesheets'
+      stylesheet_link_tag(as)
     end
   end
 
-  private
+  def spider_am(asset_type, asset_options = { })
+    assets = [ ]
+    unless asset_managers.empty?
+      asset_managers.each do |am|
+        assets += am.find_assets(asset_type, asset_options.stringify_keys) || [ ]
+      end
+    end
+    assets
+  end
 
   # WATCH OUT!!!
   # the following are overrides, and may not work with Rails version, later than 1.2.3
   def compute_public_path(source, dir, ext, options = { })
+    options.stringify_keys!
+    options['use_asset_host'] = true unless options.include?('use_asset_host')
+
     source = source.dup
     source << ".#{ext}" if File.extname(source).blank?
     unless source =~ %r{^[-a-z]+://}
@@ -41,7 +72,7 @@ class ActionView::Base
       asset_id = rails_asset_id(source)
       source << '?' + asset_id unless asset_id.blank?
 
-      if use_asset_host
+      if options['use_asset_host']
         source = "#{compute_asset_host(source)}#{@controller.request.relative_url_root}#{source}"
       else
         source = "#{@controller.request.relative_url_root}#{source}"
@@ -57,7 +88,7 @@ class ActionView::Base
       host % (source.hash % 4)
     end
   end
-
+  
   def rails_asset_id(source)
     unless asset_in_production?
       ENV["RAILS_ASSET_ID"] || 

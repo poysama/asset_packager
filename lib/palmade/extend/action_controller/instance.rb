@@ -2,7 +2,7 @@ class ActionController::Base
   hide_action :asset_manager, :javascript_include, :stylesheet_include, :asset_deflate_ok?, 
     :asset_in_production?
 
-  helper_method :asset_manager, :asset_in_production?
+  helper_method :asset_manager, :asset_managers, :asset_in_production?
   before_render :asset_before_render_hook
 
   def asset_manager(create_if_needed = false)
@@ -13,6 +13,13 @@ class ActionController::Base
     else
       self.class.asset_manager
     end
+  end
+  
+  def asset_managers
+    asset_managers = [ ]
+    asset_managers << @asset_manager if defined?(@asset_manager) && !@asset_manager.nil?
+    asset_managers += self.class.asset_managers
+    asset_managers
   end
   
   def javascript_include(*sources)
@@ -37,11 +44,12 @@ class ActionController::Base
     ENV['ASSET_PACKAGER_FORCE_PRODUCTION'] || RAILS_ENV == "production"
   end
 
-  protected
-
   def asset_include(asset_type, *sources)
     self.class.asset_include_to_am(asset_manager(true), asset_type, *sources)
   end
+
+
+  protected
 
   def prevent_default_assets?
     defined?(@asset_manager_prevent_defaults) && @asset_manager_prevent_defaults
@@ -85,7 +93,7 @@ class ActionController::Base
           end
   
           # check for action assets
-          if rails_asset_packager.asset_exists?(default_template_name)
+          if rails_asset_packager.asset_exists?(asset_type, default_template_name)
             asset_include(asset_type, default_template_name, :set => 'default')
           end
         end

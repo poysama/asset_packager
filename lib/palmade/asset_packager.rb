@@ -25,6 +25,7 @@ end
 require File.join(File.dirname(__FILE__), 'jsmin')
 
 require File.join(File.dirname(__FILE__), 'asset_packager/base')
+require File.join(File.dirname(__FILE__), 'asset_packager/asset')
 require File.join(File.dirname(__FILE__), 'asset_packager/types')
 require File.join(File.dirname(__FILE__), 'asset_packager/package')
 require File.join(File.dirname(__FILE__), 'asset_packager/parser')
