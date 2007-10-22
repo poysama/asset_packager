@@ -101,5 +101,7 @@ class ActionController::Base
         @processed_default_assets = true
       end
     end
+    
+    true
   end
 end

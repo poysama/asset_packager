@@ -27,12 +27,11 @@ module Palmade::AssetPackager
     end
 
     def source
-      if @source =~ /^package\:(.+)$/
-        @resolved_assets ||= @apt.get_assets_from($~[1])
-        
-        @resolved_assets.collect do |ra|
-          ra.source
-        end.flatten
+      if @source =~ /^package\:\s*(.+)\s*$/
+        @resolved_assets ||= $~[1].split(/\|/).collect do |package_name|
+          this_assets = @apt.get_assets_from(package_name)
+          this_assets.collect { |ta| ta.source }.flatten unless this_assets.nil? || this_assets.empty?
+        end.flatten.compact
       else
         @source
       end

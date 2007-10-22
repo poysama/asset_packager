@@ -161,8 +161,11 @@ module Palmade::AssetPackager::Types
         line_source, line_options = split_options(sl)
         sl_options.update({ :line_options => line_options }) unless line_options.nil? || line_options.empty?
 
+        url_path = nil
         # full-path, relative to ASSET_ROOT
-        if line_source =~ /^(\/([^\/]+\/)+)(.*)$/
+        if line_source =~ /^package\:\s*(.+)\s*$/
+          source_name = "package:#{$~[1]}"
+        elsif line_source =~ /^(\/([^\/]+\/)+)(.*)$/
           url_path = $~[1].chop
           source_name = $~[3]
         # relative to ASSET_ROOT/#{asset_type}
@@ -176,7 +179,8 @@ module Palmade::AssetPackager::Types
 
         source_names = source_name.split('|')
         for source_name in source_names
-          assets << Palmade::AssetPackager::AssetBase.new(self, File.join(url_path, source_name), sl_options)
+          asset_path = url_path.nil? ? source_name : File.join(url_path, source_name)
+          assets << Palmade::AssetPackager::AssetBase.new(self, asset_path, sl_options)
         end
       end
   end

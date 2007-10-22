@@ -14,11 +14,11 @@ module Palmade::AssetPackager::Types
       FileUtils.mkpath(File.dirname(target_filename))
       File.open(target_filename, "w") do |f|
         assets.each do |a|
-          partial = case a
-            when Hash
-              build_asset(a[:source], a[:options])
+          partial = case a.source
             when String
-              build_asset(a)
+              build_asset(a.source, a.options)
+            when Array
+              a.source.collect { |as| build_asset(as, a.options) }.join("\n\n")
           end
 
           f.write(partial)
