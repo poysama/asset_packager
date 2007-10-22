@@ -2,7 +2,7 @@ class ActionController::Base
   hide_action :asset_manager, :javascript_include, :stylesheet_include, :asset_deflate_ok?, 
     :asset_in_production?
 
-  helper_method :asset_manager
+  helper_method :asset_manager, :asset_in_production?
   before_render :asset_before_render_hook
 
   def asset_manager(create_if_needed = false)
@@ -40,9 +40,9 @@ class ActionController::Base
   protected
 
   def asset_include(asset_type, *sources)
-    asset_manager(true).update_asset(asset_type, *sources)
+    self.class.asset_include_to_am(asset_manager(true), asset_type, *sources)
   end
-  
+
   def prevent_default_assets?
     defined?(@asset_manager_prevent_defaults) && @asset_manager_prevent_defaults
   end
@@ -60,25 +60,37 @@ class ActionController::Base
 
   def asset_before_render_hook(*params)
     unless prevent_default_assets?
-      # first, let's figure out if we're going to use layouts
-      # the code that follows was copied from layouts.rb of the ActionController code
-      layout = nil
-      options = params.first
-      template_with_options = options.is_a?(Hash)
-      if apply_layout?(template_with_options, options)
-        layout = pick_layout(template_with_options, options, nil)
-      end
-
-      [ 'javascipts', 'stylesheets' ].each do |asset_type|
-        # check for layout assets
-        unless layout.nil?
-          
+      unless defined?(@processed_default_assets) && @processed_default_assets
+        # first, let's figure out if we're going to use layouts
+        # the code that follows was copied from layouts.rb of the ActionController code
+        layout = nil
+        options = params.first
+        template_with_options = options.is_a?(Hash)
+        if apply_layout?(template_with_options, options)
+          layout = pick_layout(template_with_options, options, nil)
+        end
+  
+        [ 'javascipts', 'stylesheets' ].each do |asset_type|
+          # check for layout assets
+          unless layout.nil?
+            if rails_asset_packager.asset_exists?(asset_type, layout)
+              asset_include(asset_type, layout, :set => 'default')
+            end
+          end
+  
+          # check for controller assets
+          if self.class.default_assets[asset_type] && 
+            self.class.default_assets[asset_type].size > 0
+            asset_include(asset_type, self.class.default_assets[asset_type], :set => 'default')
+          end
+  
+          # check for action assets
+          if rails_asset_packager.asset_exists?(default_template_name)
+            asset_include(asset_type, default_template_name, :set => 'default')
+          end
         end
 
-        # check for controller assets
-        
-        # check for action assets
-        
+        @processed_default_assets = true
       end
     end
   end

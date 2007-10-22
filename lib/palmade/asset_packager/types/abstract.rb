@@ -2,6 +2,8 @@ module Palmade::AssetPackager::Types
   class Abstract
     DEFAULT_TARGET_PATH = 'compiled'
     OPTIONS = [ 'include' ]
+    SOURCE_OPTIONS = [ 'set' ]
+    VALID_SOURCE_PARAMS = [ 'package' ]
 
     class Error < StandardError; end
     class NotImplemented < Error; end
@@ -42,23 +44,20 @@ module Palmade::AssetPackager::Types
 
     def options; @options ||= { }; end
     def assets; @assets ||= [ ]; end
+    
+    def update_options(opts)
+      options.update(opts)
+    end
 
-    def update_asset(*source)
-      if source.size == 1
-        source = source.first
-        case source
-        when Hash
-          at_options = source.split(OPTIONS)
-          options.update(at_options) unless at_options.nil?
-  
-          parse_source_hash(source) unless source.empty?
-        when String
-          parse_source_line(source)
-        when Array
-          source.each { |sl| update_asset(sl) }
-        end
-      else
-        source.each { |sl| update_asset(sl) }
+    def update_asset(source, source_options = { })
+      case source
+      when Hash
+        source_options.update(source.split(SOURCE_OPTIONS))
+        parse_source_hash(source.stringify_keys, source_options)
+      when String
+        parse_source_line(source, source_options)
+      when Array
+        source.each { |sl| update_asset(sl, source_options) }
       end
     end
 
@@ -73,6 +72,11 @@ module Palmade::AssetPackager::Types
           end
         end
       end
+    end
+
+    def find_assets(asset_options)
+      # options can be set, rendered
+      
     end
 
     protected
@@ -114,12 +118,19 @@ module Palmade::AssetPackager::Types
 
         [ line_params[0], line_options ]
       end
-      
-      def parse_source_hash(sh)
-        # TODO: !!!!
+
+      def parse_source_hash(sh, sh_options = { })
+        sh.assert_valid_keys(VALID_SOURCE_PARAMS)
+        sh_options.assert_valid_keys(SOURCE_OPTIONS)
+
+        if sh.include?('package')
+          assets << { :package => sh['package'], :options => sh_options }
+        end
       end
 
-      def parse_source_line(sl)
+      def parse_source_line(sl, sl_options = { })
+        sl_options.assert_valid_keys(SOURCE_OPTIONS)
+
         line_source, line_options = split_options(sl)
 
         # full-path, relative to ASSET_ROOT
@@ -138,9 +149,9 @@ module Palmade::AssetPackager::Types
         source_names = source_name.split('|')
         for source_name in source_names
           if line_options
-            assets << { :source => File.join(url_path, source_name), :options => line_options }
+            assets << { :source => File.join(url_path, source_name), :line_options => line_options, :options => sl_options }
           else
-            assets << File.join(url_path, source_name)
+            assets << { :source => File.join(url_path, source_name), :options => sl_options }
           end
         end
       end

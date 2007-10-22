@@ -70,7 +70,11 @@ class Palmade::RailsPackager
   end
 
   def rails_attach
-    ActionController::Base.rails_asset_packager = self
+    if defined?(ActionController::Base)
+      ActionController::Base.rails_asset_packager = self
+    else
+      raise Error, "ActionController::Base not loaded"
+    end
   end
 
   def create_am(controller)

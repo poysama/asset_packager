@@ -37,12 +37,23 @@ class ActionController::Base
       before_filter { |cont| cont.stylesheet_include(*sources) }
     end
     
+    
     protected
     
     def asset_include(asset_type, *sources)
-      asset_manager(false, true).update_asset(asset_type, *sources)
+      asset_include_to_am(asset_manager(false, true), asset_type, *sources)
     end
-    
+
+    def asset_include_to_am(am, asset_type, *sources)
+      if sources.size > 1
+        source_options = sources.last.is_a?(Hash) ? sources.pop : { }
+        source_options.stringify_keys!
+        am.update_asset(asset_type, sources, source_options)
+      else
+        am.update_asset(asset_type, sources[0])
+      end
+    end
+
     def process_with_asset_packager(*args)
       asset_before_process_hook(*args)
       process_without_asset_packager(*args)
