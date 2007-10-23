@@ -24,6 +24,13 @@ end
 
 require File.join(File.dirname(__FILE__), 'jsmin')
 
+module Palmade
+  module AssetPackager
+    COMPILED = 1
+    COMPILED_Z = 2
+  end
+end
+
 require File.join(File.dirname(__FILE__), 'asset_packager/base')
 require File.join(File.dirname(__FILE__), 'asset_packager/asset')
 require File.join(File.dirname(__FILE__), 'asset_packager/types')

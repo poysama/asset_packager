@@ -36,12 +36,19 @@ module Palmade::AssetPackager::Types
       @package_name = package_name
       @logger = logger
       @asset_root = asset_root
+      
+      @compiled_asset = Palmade::AssetPackager::AssetBase.new(self, target_url_filename)
+      @compiled_asset_z = Palmade::AssetPackager::AssetBase.new(self, target_url_filename_z)
     end
-    
+
     def target_path
       @target_path ||= File.join(asset_root, asset_type, DEFAULT_TARGET_PATH, package_name)
     end
-    
+
+    def target_url_path
+      @target_url_path ||= File.join("/", asset_type, DEFAULT_TARGET_PATH, package_name)
+    end
+
     def options; @options ||= { }; end
     def assets; @assets ||= [ ]; end
     
@@ -79,33 +86,58 @@ module Palmade::AssetPackager::Types
     def find_assets(asset_options)
       # options can be set, rendered
       found_assets = [ ]
-      assets.each do |asset|
-        incld = true
-        
-        if incld && asset_options.include?('set')
-          unless asset.part_of_set?(asset_options['set'])
-            incld = false
-          end
+
+      if asset_options.include?('compiled') && asset_options['compiled']
+        case asset_options['compiled']
+        when Palmade::AssetPackager::COMPILED
+          found_assets << @compiled_asset
+        when Palmade::AssetPackager::COMPILED_Z
+          found_assets << @compiled_asset_z
         end
-        
-        if incld && asset_options.include?('rendered')
-          unless asset_options['rendered'] == asset.rendered
-            incld = false
+      else
+        assets.each do |asset|
+          incld = true
+
+          if incld && asset_options.include?('set')
+            unless asset.part_of_set?(asset_options['set'])
+              incld = false
+            end
           end
+
+          if incld && asset_options.include?('rendered')
+            unless asset_options['rendered'] == asset.rendered
+              incld = false
+            end
+          end
+
+          found_assets << asset if incld
         end
-        
-        found_assets << asset if incld
       end
-      
+
       found_assets
     end
+
+    def get_assets_from(package_name, compiled = false)
+      apt = find_package(package_name)
+      unless apt.nil?
+        asset_options = { 'compiled' => compiled }
+        apt.find_assets(asset_options)
+      end
+    end
     
-    def get_assets_from(package_name)
-      apt = @ap.find_package(package_name, asset_type)
-      apt.assets unless apt.nil?
+    def find_package(package_name)
+      @ap.find_package(package_name, asset_type)
     end
     
     protected
+    def target_url_filename
+      File.join(target_url_path, "#{package_name}.#{asset_extension}")
+    end
+
+    def target_url_filename_z
+      File.join(target_url_path, "#{package_name}.#{asset_extension}.z")
+    end
+
     def target_filename
       File.join(target_path, "#{package_name}.#{asset_extension}")
     end

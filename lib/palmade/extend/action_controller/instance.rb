@@ -2,7 +2,7 @@ class ActionController::Base
   hide_action :asset_manager, :javascript_include, :stylesheet_include, :asset_deflate_ok?, 
     :asset_in_production?
 
-  helper_method :asset_manager, :asset_managers, :asset_in_production?
+  helper_method :asset_manager, :asset_managers, :asset_in_production?, :asset_deflate_ok?
   before_render :asset_before_render_hook
 
   def asset_manager(create_if_needed = false)
@@ -60,7 +60,7 @@ class ActionController::Base
   end
   
   def asset_deflate_disabled?
-    !(ENV.include?('ASSET_PACKAGER_DISABLE_DEFLATE_CHECKING') &&
+    (ENV.include?('ASSET_PACKAGER_DISABLE_DEFLATE_CHECKING') &&
     ENV['ASSET_PACKAGER_DISABLE_DEFLATE_CHECKING'] == '1')
   end
   

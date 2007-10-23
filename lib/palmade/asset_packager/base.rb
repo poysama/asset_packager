@@ -1,5 +1,3 @@
-module Palmade; module AssetPackager; end; end
-
 class Palmade::AssetPackager::Base
   attr_accessor :logger
   attr_accessor :asset_root

@@ -20,12 +20,22 @@ class ActionView::Base
     when options.include?(:package)
       asset_options[:package] = options[:package]
     end
+    
+    compiled = if asset_in_production?
+      if asset_deflate_ok?
+        Palmade::AssetPackager::COMPILED_Z
+      else
+        Palmade::AssetPackager::COMPILED
+      end
+    else
+      false
+    end
 
     assets = spider_am(asset_type, asset_options)
     assets.collect do |asset|
       asset.rendered = true
 
-      case asset.source
+      case asset.source(compiled)
       when String
         render_asset(asset_type, asset.source)
       when Array
@@ -33,7 +43,7 @@ class ActionView::Base
           render_asset(asset_type, as)
         end.join("\n")
       end
-    end.join("\n") unless assets.nil? || assets.empty?    
+    end.join("\n") unless assets.nil? || assets.empty?
   end
 
 
@@ -83,12 +93,13 @@ class ActionView::Base
 
   def compute_asset_host(source) 
     # TODO: Add support for multi-version asset hosts
+    asset_version = ActionController::Base.asset_version || 1
 
     if host = ActionController::Base.asset_host 
-      host % (source.hash % 4)
+      host % [ (source.hash % 4), asset_version ]
     end
   end
-  
+
   def rails_asset_id(source)
     unless asset_in_production?
       ENV["RAILS_ASSET_ID"] || 
