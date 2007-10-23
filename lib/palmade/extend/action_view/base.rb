@@ -6,10 +6,9 @@ class ActionView::Base
   def stylesheet_tags(options = { })
     asset_tags('stylesheets', options)
   end
-  
-  
+
   protected
-  
+
   def asset_tags(asset_type, options)
     asset_options = { :rendered => false }
     asset_options.update(options)
@@ -21,6 +20,7 @@ class ActionView::Base
       asset_options[:package] = options[:package]
     end
     
+    # this flag only affects the packaged assets
     compiled = if asset_in_production?
       if asset_deflate_ok?
         Palmade::AssetPackager::COMPILED_Z

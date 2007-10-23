@@ -1,6 +1,6 @@
 class ActionController::Base
   hide_action :asset_manager, :javascript_include, :stylesheet_include, :asset_deflate_ok?, 
-    :asset_in_production?
+    :asset_in_production?, :asset_include, :asset_managers
 
   helper_method :asset_manager, :asset_managers, :asset_in_production?, :asset_deflate_ok?
   before_render :asset_before_render_hook
