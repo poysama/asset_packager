@@ -15,7 +15,9 @@ class ActionController::Base
         if defined?(@asset_manager)
           @asset_manager
         elsif create_if_needed
-          @asset_manager = rails_asset_packager.create_am(self)
+          unless rails_asset_packager.nil?
+            @asset_manager = rails_asset_packager.create_am(self)
+          end
         elsif self == ActionController::Base
           nil
         else
@@ -51,7 +53,10 @@ class ActionController::Base
     end
 
     def asset_include(asset_type, *sources)
-      asset_include_to_am(asset_manager(false, true), asset_type, *sources)
+      am = asset_manager(false, true)
+      unless am.nil?
+        asset_include_to_am(am, asset_type, *sources)
+      end
     end
 
     def asset_include_to_am(am, asset_type, *sources)
