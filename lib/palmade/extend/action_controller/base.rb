@@ -2,7 +2,7 @@ class ActionController::Base
   @@rails_asset_packager = nil
   cattr_accessor :rails_asset_packager
 
-  @@asset_version = 1
+  @@asset_version = 0
   cattr_reader :asset_version
 
   class << self

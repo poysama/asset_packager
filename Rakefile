@@ -5,7 +5,7 @@ Echoe.new("asset_packager") do |p|
   p.project = "palmade"
   p.summary = "An asset_packager for use with Rails and other frameworks"
 
-  p.dependencies = [ 'as_extensions' ]
+  p.dependencies = [ 'rails_extensions' ]
 
   p.need_tar_gz = false
   p.need_tgz = true

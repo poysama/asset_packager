@@ -93,7 +93,7 @@ class ActionView::Base
 
   def compute_asset_host(source) 
     # TODO: Add support for multi-version asset hosts
-    asset_version = ActionController::Base.asset_version || 1
+    asset_version = ActionController::Base.asset_version || 0
 
     if host = ActionController::Base.asset_host 
       host % [ (source.hash % 4), asset_version ]
