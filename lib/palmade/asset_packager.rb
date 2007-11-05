@@ -2,23 +2,22 @@ require 'rubygems'
 require 'logger'
 require 'fileutils'
 
+ASSET_PACKAGER_LIB_PALMADE_DIR = File.dirname(__FILE__)
+ASSET_PACKAGER_LIB_DIR = File.join(ASSET_PACKAGER_LIB_PALMADE_DIR, '..')
+ASSET_PACKAGER_ROOT_DIR = File.join(ASSET_PACKAGER_LIB_DIR, '..')
+
 unless defined?(PALMADE_DEFAULT_LOGGER)
   PALMADE_DEFAULT_LOGGER = Logger.new($stdout)
   PALMADE_DEFAULT_LOGGER.level = Logger::DEBUG
 end
 
-# this library uses the RailsExtensions methods
-unless defined?(Palmade::RailsExtensions)
-  begin
-    re_dir = File.join(File.dirname(__FILE__), "../../../rails_extensions/lib")
-    raise LoadError unless File.exists?(re_dir) && File.exists?(File.join(re_dir, 'palmade/rails_extensions.rb'))
-
-    puts "Using local rails_extensions package"
-    $:.unshift(re_dir)
-    require 'palmade/rails_extensions'
-  rescue LoadError
-    gem 'rails_extensions'
-    require 'palmade/rails_extensions'
+unless defined?(Palmade::VERSION)
+  PALMADE_EXT_RELATIVE_DIR = File.join(ASSET_PACKAGER_ROOT_DIR, '../palmade_extensions')
+  if File.exists?(File.join(PALMADE_EXT_RELATIVE_DIR, 'lib/palmade/palmade_extensions.rb'))
+    require File.join(PALMADE_EXT_RELATIVE_DIR, 'lib/palmade/palmade_extensions')
+  else
+    gem 'palmade_extensions'
+    require 'palmade/palmade_extensions'
   end
 end
 
