@@ -79,7 +79,8 @@ class ActionController::Base
     alias_method_chain :process, :asset_packager
     
     private
-
+    
+    # class-level process hook (should only be parsed once / per class load)
     def asset_before_process_hook(*args)
       @default_assets ||= { }
 
