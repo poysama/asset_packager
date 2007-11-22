@@ -25,6 +25,11 @@ require File.join(File.dirname(__FILE__), 'jsmin')
 
 module Palmade
   module AssetPackager
+    extend self
+
+    attr_accessor :post_initialization
+    self.post_initialization = nil
+    
     COMPILED = 1
     COMPILED_Z = 2
   end
@@ -39,8 +44,12 @@ require File.join(File.dirname(__FILE__), 'asset_packager/manager')
 
 if defined?(RAILS_ROOT)
   # ok, add RAILS extensions
-  require File.join(File.dirname(__FILE__), 'rails_packager')
-  require File.join(File.dirname(__FILE__), 'extend/action_controller/base')
-  require File.join(File.dirname(__FILE__), 'extend/action_controller/instance')
-  require File.join(File.dirname(__FILE__), 'extend/action_view/base')
+  Palmade::AssetPackager.post_initialization = lambda do
+    require File.join(File.dirname(__FILE__), 'rails_packager')
+    require File.join(File.dirname(__FILE__), 'extend/action_controller/base')
+    require File.join(File.dirname(__FILE__), 'extend/action_controller/instance')
+    require File.join(File.dirname(__FILE__), 'extend/action_view/base')
+  end
+
+  Palmade::AssetPackager.post_initialization.call
 end
