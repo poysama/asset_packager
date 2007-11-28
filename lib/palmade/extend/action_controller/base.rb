@@ -69,7 +69,6 @@ class ActionController::Base
       end
     end
 
-    
     protected
 
     def process_with_asset_packager(*args)
@@ -77,13 +76,12 @@ class ActionController::Base
       process_without_asset_packager(*args)
     end
     alias_method_chain :process, :asset_packager
-    
+
     private
-    
+
     # class-level process hook (should only be parsed once / per class load)
     def asset_before_process_hook(*args)
       @default_assets ||= { }
-
       unless defined?(@processed_default_assets) && @processed_default_assets
         [ 'stylesheets', 'javascripts' ].each do |asset_type|
           asset_controller = 'controllers/' + controller_path
@@ -92,7 +90,6 @@ class ActionController::Base
             @default_assets[asset_type] << asset_controller
           end
         end
-
         @processed_default_assets = true
       end
     end

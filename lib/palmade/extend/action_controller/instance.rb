@@ -3,6 +3,8 @@ class ActionController::Base
     :asset_in_production?, :asset_include, :asset_managers
 
   helper_method :asset_manager, :asset_managers, :asset_in_production?, :asset_deflate_ok?
+
+  # TODO: Change this, not to depend on rails_extensions! (not so portable!)
   before_render :asset_before_render_hook
 
   def asset_manager(create_if_needed = false)
