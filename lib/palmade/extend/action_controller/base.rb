@@ -3,7 +3,7 @@ class ActionController::Base
   cattr_accessor :rails_asset_packager
 
   @@asset_version = 0
-  cattr_reader :asset_version
+  cattr_accessor :asset_version
 
   class << self
     attr_reader :default_assets
