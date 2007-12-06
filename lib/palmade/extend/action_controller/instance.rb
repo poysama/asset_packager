@@ -11,14 +11,14 @@ class ActionController::Base
     if defined?(@asset_manager)
       @asset_manager
     elsif create_if_needed
-      unless rails_asset_packager.nil?
-        @asset_manager = rails_asset_packager.create_instance_am(self)
-      end
+      returning @asset_manager = rails_asset_packager.create_instance_am(self) do |am|
+        am.inherit_assets(self.class.asset_managers, true)
+      end unless rails_asset_packager.nil?
     else
       self.class.asset_manager
     end
   end
-  
+
   def asset_managers
     asset_managers = [ ]
     asset_managers << @asset_manager if defined?(@asset_manager) && !@asset_manager.nil?

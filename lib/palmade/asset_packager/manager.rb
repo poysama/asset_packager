@@ -1,7 +1,8 @@
 module Palmade::AssetPackager
   class Manager
     attr_accessor :logger
-  
+    attr_accessor :assets
+
     def initialize(base, name, asset_root, logger)
       @ap = base
       @package_name = name
@@ -28,12 +29,16 @@ module Palmade::AssetPackager
       end
     end
 
-    def inherit_assets(other_am)
-      @assets.keys.each do |asset_type|
-        @assets[asset_type].include_asset(other_am[asset_type]) unless other_am[asset_type].nil?
+    def inherit_assets(other_ams, dup = false)
+      other_ams = [ other_ams ] unless other_ams.is_a?(Array)
+      other_ams.each do |other_am|
+        other_am.assets.each do |asset_type, asset|
+          my_asset = get_or_create_asset(asset_type)
+          my_asset.include_assets(asset, dup) unless asset.nil?
+        end
       end
     end
-  
+
     def update_assets_from_yml(pdata)
       # asset types can be javascripts, stylesheets, images
       pdata.keys.each do |asset_type|

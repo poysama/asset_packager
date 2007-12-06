@@ -86,33 +86,36 @@ module Palmade::AssetPackager::Types
     def find_assets(asset_options)
       # options can be set, rendered
       found_assets = [ ]
-
+      
+      this_assets = [ ]
       if asset_options.include?('compiled') && asset_options['compiled']
         case asset_options['compiled']
         when Palmade::AssetPackager::COMPILED
-          found_assets << @compiled_asset
+          this_assets << @compiled_asset
         when Palmade::AssetPackager::COMPILED_Z
-          found_assets << @compiled_asset_z
+          this_assets << @compiled_asset_z
         end
       else
-        assets.each do |asset|
-          incld = true
-
-          if incld && asset_options.include?('set')
-            unless asset.part_of_set?(asset_options['set'])
-              incld = false
-            end
-          end
-
-          if incld && asset_options.include?('rendered')
-            unless asset_options['rendered'] == asset.rendered
-              incld = false
-            end
-          end
-
-          found_assets << asset if incld
-        end
+        this_assets = assets
       end
+
+      this_assets.each do |asset|
+        incld = true
+
+        if incld && asset_options.include?('set')
+          unless asset.part_of_set?(asset_options['set'])
+            incld = false
+          end
+        end
+
+        if incld && asset_options.include?('rendered')
+          unless asset_options['rendered'] == asset.rendered
+            incld = false
+          end
+        end
+
+        found_assets << asset if incld
+      end unless this_assets.empty?
 
       found_assets
     end
@@ -128,8 +131,19 @@ module Palmade::AssetPackager::Types
     def find_package(package_name)
       @ap.find_package(package_name, asset_type)
     end
-    
+
+    def include_assets(apt, dup = false)
+      if dup
+        apt.assets.each do |asset|
+          assets << asset.dup
+        end
+      else
+        assets.concat(apt.assets)
+      end
+    end
+
     protected
+
     def target_url_filename
       File.join(target_url_path, "#{package_name}.#{asset_extension}")
     end
@@ -152,11 +166,7 @@ module Palmade::AssetPackager::Types
       apt = @ap.find_package(package_name, asset_type)
       include_assets(apt) unless apt.nil?
     end
-    
-    def include_assets(apt)
-      assets.concat(apt.assets)
-    end
-    
+
     def find_asset(a)
       possible_name = File.join(asset_root, "#{a}.#{asset_extension}")
       return possible_name if File.exists?(possible_name)

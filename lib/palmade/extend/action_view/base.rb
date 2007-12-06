@@ -59,13 +59,20 @@ class ActionView::Base
   end
 
   def spider_am(asset_type, asset_options = { })
-    assets = [ ]
-    unless asset_managers.empty?
-      asset_managers.each do |am|
-        assets += am.find_assets(asset_type, asset_options.stringify_keys) || [ ]
-      end
+#    assets = [ ]
+#    unless asset_managers.empty?
+#      asset_managers.each do |am|
+#        assets += am.find_assets(asset_type, asset_options.stringify_keys) || [ ]
+#      end
+#    end
+
+    # only get the instance asset_manager, to set the rendered flag properly
+    # the commented version above, is not thread-safe!!!
+    unless asset_manager.nil?
+      asset_manager.find_assets(asset_type, asset_options.stringify_keys)
+    else
+      [ ]
     end
-    assets
   end
 
   # WATCH OUT!!!
