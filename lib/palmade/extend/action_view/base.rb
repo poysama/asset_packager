@@ -68,11 +68,7 @@ class ActionView::Base
 
     # only get the instance asset_manager, to set the rendered flag properly
     # the commented version above, is not thread-safe!!!
-    unless asset_manager.nil?
-      asset_manager.find_assets(asset_type, asset_options.stringify_keys)
-    else
-      [ ]
-    end
+    asset_manager.nil? ? [ ] : asset_manager.find_assets(asset_type, asset_options.stringify_keys)
   end
 
   # WATCH OUT!!!
