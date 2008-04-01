@@ -15,12 +15,12 @@ begin
 	puts "Using local asset_packager package"
     $:.unshift(ap_dir)
     load 'asset_packer'
-rescue LoadError
-	version = "> 0"
-	if ARGV.first =~ /^_(.*)_$/ and Gem::Version.correct? $1 then
-	  version = $1
-	  ARGV.shift
-	end
-	gem 'asset_packager', version
-	load 'asset_packer'
+#rescue LoadError
+#	version = "> 0"
+#	if ARGV.first =~ /^_(.*)_$/ and Gem::Version.correct? $1 then
+#	  version = $1
+#	  ARGV.shift
+#	end
+#	gem 'asset_packager', version
+#	load 'asset_packer'
 end

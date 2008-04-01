@@ -1,7 +1,5 @@
-
 require 'palmade/asset_packager'
 
 if defined?(USE_RAILS) && USE_RAILS
-	require 'palmade/rails_packager'
-	Palmade::RailsPackager.new(Dir.pwd).run(ARGV)
+	Palmade::AssetPackager::RailsPackager.new(Dir.pwd).run(ARGV)
 end

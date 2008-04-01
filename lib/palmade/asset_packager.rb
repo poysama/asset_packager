@@ -21,35 +21,17 @@ unless defined?(Palmade::VERSION)
   end
 end
 
-require File.join(File.dirname(__FILE__), 'jsmin')
-
 module Palmade
   module AssetPackager
-    extend self
-
-    attr_accessor :post_initialization
-    self.post_initialization = nil
+    autoload :AssetBase, File.join(ASSET_PACKAGER_LIB_PALMADE_DIR, 'asset_packager/asset_base')
+    autoload :Jsmin, File.join(ASSET_PACKAGER_LIB_PALMADE_DIR, 'asset_packager/jsmin')
+    autoload :Types, File.join(ASSET_PACKAGER_LIB_PALMADE_DIR, 'asset_packager/types')
+    autoload :Base, File.join(ASSET_PACKAGER_LIB_PALMADE_DIR, 'asset_packager/base')
+    autoload :Helpers, File.join(ASSET_PACKAGER_LIB_PALMADE_DIR, 'asset_packager/helpers')
+    autoload :Manager, File.join(ASSET_PACKAGER_LIB_PALMADE_DIR, 'asset_packager/manager')
+    autoload :RailsPackager, File.join(ASSET_PACKAGER_LIB_PALMADE_DIR, 'asset_packager/rails_packager')
     
     COMPILED = 1
     COMPILED_Z = 2
   end
-end
-
-require File.join(File.dirname(__FILE__), 'asset_packager/base')
-require File.join(File.dirname(__FILE__), 'asset_packager/asset')
-require File.join(File.dirname(__FILE__), 'asset_packager/types')
-require File.join(File.dirname(__FILE__), 'asset_packager/package')
-require File.join(File.dirname(__FILE__), 'asset_packager/parser')
-require File.join(File.dirname(__FILE__), 'asset_packager/manager')
-
-if defined?(RAILS_ROOT)
-  # ok, add RAILS extensions
-  Palmade::AssetPackager.post_initialization = lambda do
-    require File.join(File.dirname(__FILE__), 'rails_packager')
-    require File.join(File.dirname(__FILE__), 'extend/action_controller/base')
-    require File.join(File.dirname(__FILE__), 'extend/action_controller/instance')
-    require File.join(File.dirname(__FILE__), 'extend/action_view/base')
-  end
-
-  Palmade::AssetPackager.post_initialization.call
 end

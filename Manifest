@@ -1,6 +1,7 @@
 CHANGELOG
 COPYING
 LICENSE
+Manifest
 README
 bin/asset_packer
 bin/rails_packer
@@ -24,4 +25,3 @@ lib/palmade/extend/action_controller/base.rb
 lib/palmade/extend/action_controller/instance.rb
 lib/palmade/extend/action_view/base.rb
 test_bin/console
-Manifest

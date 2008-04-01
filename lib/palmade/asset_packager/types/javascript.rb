@@ -42,7 +42,7 @@ module Palmade::AssetPackager::Types
           File.read(asset_filename)
         else
           logger.debug("...  js minifying file")
-          Palmade::Jsmin.minify(File.read(asset_filename) + "\n\n")
+          Palmade::AssetPackager::Jsmin.minify(File.read(asset_filename) + "\n\n")
         end
       end
   end

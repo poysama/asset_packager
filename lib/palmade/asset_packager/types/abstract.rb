@@ -1,3 +1,5 @@
+require 'zlib'
+
 module Palmade::AssetPackager::Types
   class Abstract
     DEFAULT_TARGET_PATH = 'compiled'
@@ -8,6 +10,15 @@ module Palmade::AssetPackager::Types
     class Error < StandardError; end
     class NotImplemented < Error; end
     class AssetFileNotFound < Error; end
+
+    DEFLATE_LEVEL = 9
+
+    def deflate(source_content, target)
+      File.open(target, 'w') do |f|
+        z = Zlib::Deflate.deflate(source_content, DEFLATE_LEVEL)
+        f.write z[2..-5]
+      end
+    end
     
     attr_accessor :logger
     attr_accessor :asset_root

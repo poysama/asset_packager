@@ -1,10 +1,12 @@
-module Palmade::AssetPackager::Package
-  def find_package(package_name, asset_type = nil)
-    sp = sources[package_name]
-    asset_type.nil? ? sp : sp[asset_type] unless sp.nil?
-  end
+module Palmade::AssetPackager
+  class Base
+    def find_package(package_name, asset_type = nil)
+      sp = sources[package_name]
+      asset_type.nil? ? sp : sp[asset_type] unless sp.nil?
+    end
 
-  protected
+    protected
+
     def build_package(package_name)
       logger.info("** Package build: #{package_name}")
 
@@ -20,6 +22,5 @@ module Palmade::AssetPackager::Package
         sp.destroy_package
       end
     end
+  end
 end
-
-Palmade::AssetPackager::Base.send(:include, Palmade::AssetPackager::Package)

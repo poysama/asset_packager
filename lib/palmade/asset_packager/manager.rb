@@ -2,6 +2,12 @@ module Palmade::AssetPackager
   class Manager
     attr_accessor :logger
     attr_accessor :assets
+    
+    ASSET_TYPE_MAP =  {
+      'javascripts' => [ :Javascript, 'js' ], 
+      'stylesheets' => [ :Stylesheet, 'css' ], 
+      'images' => [ :Image, 'png' ]
+    }
 
     def initialize(base, name, asset_root, logger)
       @ap = base
@@ -79,14 +85,13 @@ module Palmade::AssetPackager
         apt.destroy
       end
     end
-    
-    
+
     protected
-  
+
     def get_or_create_asset(asset_type)
       if @assets[asset_type].nil?
-        klass = @ap.get_asset_type_class(asset_type)
-        @assets[asset_type] = klass.new(@ap, @package_name, @asset_root, @logger)
+        klass = Palmade::AssetPackager::Types.get_asset_type_class(ASSET_TYPE_MAP[asset_type.to_s][0])
+        @assets[asset_type] = klass.new(@ap, @package_name, @asset_root, @logger) unless klass.nil?
       else
         @assets[asset_type]
       end

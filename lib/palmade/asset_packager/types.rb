@@ -1,13 +1,12 @@
-module Palmade::AssetPackager::Types; end
-
-class Palmade::AssetPackager::Base
-  def get_asset_type_class(asset_type)
-    "Palmade::AssetPackager::Types::#{asset_type.classify}".constantize
+module Palmade::AssetPackager
+  module Types
+    autoload :Abstract, File.join(ASSET_PACKAGER_LIB_PALMADE_DIR, 'asset_packager/types/abstract')
+    autoload :Javascript, File.join(ASSET_PACKAGER_LIB_PALMADE_DIR, 'asset_packager/types/javascript')
+    autoload :Stylesheet, File.join(ASSET_PACKAGER_LIB_PALMADE_DIR, 'asset_packager/types/stylesheet')
+    autoload :Image, File.join(ASSET_PACKAGER_LIB_PALMADE_DIR, 'asset_packager/types/image')
+    
+    def self.get_asset_type_class(asset_type)
+      const_get(asset_type)
+    end
   end
 end
-
-require File.join(File.dirname(__FILE__), 'types/abstract')
-require File.join(File.dirname(__FILE__), 'types/compress')
-require File.join(File.dirname(__FILE__), 'types/javascript')
-require File.join(File.dirname(__FILE__), 'types/stylesheet')
-require File.join(File.dirname(__FILE__), 'types/image')

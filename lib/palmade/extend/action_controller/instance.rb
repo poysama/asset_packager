@@ -85,7 +85,7 @@ class ActionController::Base
           layout = pick_layout(template_with_options, options, nil)
         end
   
-        [ 'javascipts', 'stylesheets' ].each do |asset_type|
+        [ 'javascripts', 'stylesheets' ].each do |asset_type|
           # check for layout assets
           unless layout.nil?
             if rails_asset_packager.asset_exists?(asset_type, layout)
