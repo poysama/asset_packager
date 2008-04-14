@@ -8,5 +8,17 @@ module Palmade::AssetPackager::Helpers
         require(File.join(ASSET_PACKAGER_LIB_PALMADE_DIR, 'extend/action_view/base'))
       end
     end
+    
+    # this is called, right after the framework are loaded, to support the 
+    # additional config options attached to the ActionController framework
+    # e.g. config.action_controller.asset_version = 0
+    def self.add_configuration_options(configuration)
+      if configuration.frameworks.include?(:action_controller)
+        class << ActionController::Base
+          cattr_accessor :asset_version
+          self.asset_version = 0
+        end
+      end
+    end
   end
 end
