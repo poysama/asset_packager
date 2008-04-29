@@ -1,3 +1,5 @@
+require 'rubygems'
+gem 'echoe'
 require 'echoe'
 
 Echoe.new("asset_packager") do |p|
