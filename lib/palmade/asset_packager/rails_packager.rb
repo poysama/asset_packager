@@ -19,7 +19,7 @@ module Palmade::AssetPackager
     def default_conf_dir
       File.join(@rails_root, 'config/asset_packages')
     end
-    
+
     def build
       logger.info("** Start building asset files")
       @asset_packager.build
@@ -29,7 +29,7 @@ module Palmade::AssetPackager
       delete
       build
     end
-    
+
     def delete
       logger.info("** Start deleting built asset files")
       @asset_packager.delete
@@ -45,7 +45,7 @@ module Palmade::AssetPackager
       elsif File.exists?(default_conf_dir)
         @asset_packager.build_package_list(default_conf_dir, true)
       else
-        raise ConfigNotFound, "Default configuration file(s) not found"
+        #raise ConfigNotFound, "Default configuration file(s) not found"
       end
 
       case (argv.is_a?(Array) ? argv[0] : argv)
@@ -71,15 +71,15 @@ module Palmade::AssetPackager
     end
 
     def create_am(controller)
-      Palmade::AssetPackager::Manager.new(asset_packager, 
+      Palmade::AssetPackager::Manager.new(asset_packager,
         controller.controller_path.gsub(/\//, '_'), asset_packager.asset_root, logger)
     end
 
     def create_instance_am(cont_obj)
-      Palmade::AssetPackager::Manager.new(asset_packager, 
+      Palmade::AssetPackager::Manager.new(asset_packager,
         cont_obj.controller_path.gsub(/\//, '_') + '_instance', asset_packager.asset_root, logger)
     end
-    
+
     def asset_exists?(asset_type, asset_path)
       File.exists?(File.join(asset_packager.asset_root, asset_type, asset_path + ".#{Palmade::AssetPackager::Manager::ASSET_TYPE_MAP[asset_type.to_s][1]}")) ||
         File.exists?(File.join(asset_packager.asset_root, asset_type, asset_path))
