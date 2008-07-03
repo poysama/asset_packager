@@ -1,5 +1,5 @@
 class ActionController::Base
-  hide_action :asset_manager, :javascript_include, :stylesheet_include, :asset_deflate_ok?, 
+  hide_action :asset_manager, :javascript_include, :stylesheet_include, :asset_deflate_ok?,
     :asset_in_production?, :asset_include, :asset_managers
 
   helper_method :asset_manager, :asset_managers, :asset_in_production?, :asset_deflate_ok?
@@ -25,17 +25,17 @@ class ActionController::Base
     asset_managers += self.class.asset_managers
     asset_managers
   end
-  
+
   def javascript_include(*sources)
     asset_include('javascripts', *sources)
   end
-  
+
   def stylesheet_include(*sources)
     asset_include('stylesheets', *sources)
   end
-  
+
   def asset_deflate_ok?
-    if !asset_deflate_disabled? && 
+    if !asset_deflate_disabled? &&
       request.env.include?('HTTP_ACCEPT_ENCODING') &&
       request.env['HTTP_ACCEPT_ENCODING'].split(/\s*\,\s*/).include?('deflate')
       true
@@ -61,16 +61,16 @@ class ActionController::Base
   def prevent_default_assets?
     defined?(@asset_manager_prevent_defaults) && @asset_manager_prevent_defaults
   end
-  
+
   def prevent_default_assets!(prevent = true)
     @asset_manager_prevent_defaults = prevent
   end
-  
+
   def asset_deflate_disabled?
     (ENV.include?('ASSET_PACKAGER_DISABLE_DEFLATE_CHECKING') &&
     ENV['ASSET_PACKAGER_DISABLE_DEFLATE_CHECKING'] == '1')
   end
-  
+
   private
 
   def asset_before_render_hook(*params)
@@ -84,7 +84,7 @@ class ActionController::Base
         if apply_layout?(template_with_options, options)
           layout = pick_layout(template_with_options, options, nil)
         end
-  
+
         [ 'javascripts', 'stylesheets' ].each do |asset_type|
           # check for layout assets
           unless layout.nil?
@@ -92,13 +92,13 @@ class ActionController::Base
               asset_include(asset_type, layout, :set => 'default')
             end
           end
-  
+
           # check for controller assets
-          if self.class.default_assets[asset_type] && 
+          if self.class.default_assets[asset_type] &&
             self.class.default_assets[asset_type].size > 0
             asset_include(asset_type, self.class.default_assets[asset_type], :set => 'default')
           end
-  
+
           # check for action assets
           if rails_asset_packager.asset_exists?(asset_type, default_template_name)
             asset_include(asset_type, default_template_name, :set => 'default')
@@ -108,7 +108,7 @@ class ActionController::Base
         @processed_default_assets = true
       end
     end
-    
+
     true
   end
 end

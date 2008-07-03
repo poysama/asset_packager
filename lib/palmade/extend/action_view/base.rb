@@ -2,7 +2,7 @@ class ActionView::Base
   def javascript_tags(options = { })
     asset_tags('javascripts', options)
   end
-  
+
   def stylesheet_tags(options = { })
     asset_tags('stylesheets', options)
   end
@@ -19,16 +19,16 @@ class ActionView::Base
     when options.include?(:package)
       asset_options[:package] = options[:package]
     end
-    
+
     # this flag only affects the packaged assets
-    compiled = if asset_in_production?
+    if asset_in_production?
       if asset_deflate_ok?
-        Palmade::AssetPackager::COMPILED_Z
+        compiled = Palmade::AssetPackager::COMPILED_Z
       else
-        Palmade::AssetPackager::COMPILED
+        compiled = Palmade::AssetPackager::COMPILED
       end
     else
-      false
+      compiled = false
     end
 
     assets = spider_am(asset_type, asset_options)
@@ -94,18 +94,18 @@ class ActionView::Base
     source
   end
 
-  def compute_asset_host(source) 
+  def compute_asset_host(source)
     # TODO: Add support for multi-version asset hosts
     asset_version = ActionController::Base.asset_version || 0
 
-    if host = ActionController::Base.asset_host 
+    if host = ActionController::Base.asset_host
       host % [ (source.hash % 4), asset_version ]
     end
   end
 
   def rails_asset_id(source)
     unless asset_in_production?
-      ENV["RAILS_ASSET_ID"] || 
+      ENV["RAILS_ASSET_ID"] ||
         File.mtime("#{RAILS_ROOT}/public/#{source}").to_i.to_s rescue ""
     end
   end
