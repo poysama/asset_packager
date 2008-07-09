@@ -1,6 +1,7 @@
 class ActionController::Base
   hide_action :asset_manager, :javascript_include, :stylesheet_include, :asset_deflate_ok?,
-    :asset_in_production?, :asset_include, :asset_managers
+    :asset_in_production?, :asset_include, :asset_managers, :compute_public_path,
+    :compute_asset_host, :compute_rails_asset_id
 
   helper_method :asset_manager, :asset_managers, :asset_in_production?, :asset_deflate_ok?
 
@@ -55,6 +56,47 @@ class ActionController::Base
     end
   end
 
+  def compute_public_path(source, dir = nil, ext = nil, options = { })
+    options = options.stringify_keys
+    options['use_asset_host'] = true unless options.include?('use_asset_host')
+
+    source += ".#{ext}" if !ext.nil? && File.extname(source).blank?
+    unless source =~ %r{^[-a-z]+://}
+      source = "/#{dir}/#{source}" unless dir.nil? || source[0] == ?/
+
+      asset_id = compute_rails_asset_id(source)
+      source += '?' + asset_id unless asset_id.blank?
+
+      rur = request.relative_url_root
+      unless rur.nil? || rur.empty?
+        source = File.join(rur, source)
+      end
+
+      if options['use_asset_host']
+        source = File.join(compute_asset_host(source), source)
+      end
+    end
+    source
+  end
+
+  def compute_asset_host(source)
+    # TODO: Add support for multi-version asset hosts
+    asset_version = self.class.asset_version || 0
+    if host = self.class.asset_host
+      host % [ (source.hash % 4), asset_version ]
+    else
+      nil
+    end
+  end
+
+  def compute_rails_asset_id(source)
+    unless asset_in_production?
+      ENV["RAILS_ASSET_ID"] ||
+        File.mtime("#{RAILS_ROOT}/public/#{source}").to_i.to_s rescue ""
+    else
+      nil
+    end
+  end
 
   protected
 
