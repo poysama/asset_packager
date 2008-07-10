@@ -73,7 +73,7 @@ class ActionView::Base
 
   # WATCH OUT!!!
   # the following are overrides, and may not work with Rails version, later than 1.2.3
-  def compute_public_path(source, dir, ext, options = { })
+  def compute_public_path(source, dir = nil, ext = nil, options = { })
     controller.compute_public_path(source, dir, ext, options)
   end
 
