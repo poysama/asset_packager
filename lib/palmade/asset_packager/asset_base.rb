@@ -53,7 +53,7 @@ module Palmade::AssetPackager
     end
 
     private
-    
+
     def get_assets_from_package(plist, compiled)
       plist.split(/\|/).collect do |package_name|
         this_assets = @apt.get_assets_from(package_name, compiled)

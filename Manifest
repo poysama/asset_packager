@@ -5,6 +5,7 @@ bin/rails_packer
 LICENSE
 test_bin/console
 Manifest
+Rakefile
 COPYING
 lib/asset_packager/init.rb
 lib/asset_packer

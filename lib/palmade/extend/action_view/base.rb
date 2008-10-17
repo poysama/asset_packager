@@ -7,6 +7,14 @@ class ActionView::Base
     asset_tags('stylesheets', options)
   end
 
+  def javascript_include(*sources)
+    controller.asset_include('javascripts', *sources)
+  end
+
+  def stylesheet_include(*sources)
+    controller.asset_include('stylesheets', *sources)
+  end
+
   protected
 
   def asset_tags(asset_type, options)
@@ -46,7 +54,6 @@ class ActionView::Base
     end.join("\n") unless assets.nil? || assets.empty?
   end
 
-
   private
 
   def render_asset(asset_type, as)
@@ -59,13 +66,6 @@ class ActionView::Base
   end
 
   def spider_am(asset_type, asset_options = { })
-#    assets = [ ]
-#    unless asset_managers.empty?
-#      asset_managers.each do |am|
-#        assets += am.find_assets(asset_type, asset_options.stringify_keys) || [ ]
-#      end
-#    end
-
     # only get the instance asset_manager, to set the rendered flag properly
     # the commented version above, is not thread-safe!!!
     asset_manager.nil? ? [ ] : asset_manager.find_assets(asset_type, asset_options.stringify_keys)
