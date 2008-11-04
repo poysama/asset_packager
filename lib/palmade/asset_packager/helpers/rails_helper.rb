@@ -8,8 +8,10 @@ module Palmade::AssetPackager::Helpers
         require(File.join(ASSET_PACKAGER_LIB_PALMADE_DIR, 'extend/action_view/base'))
 
         # include cell extensions
-        if defined?(::Palmade::Cells)
-          require(File.join(ASSET_PACKAGER_LIB_PALMADE_DIR, 'extend/cells/base'))
+        configuration.after_initialize do
+          if defined?(Palmade::Cells)
+            require(File.join(ASSET_PACKAGER_LIB_PALMADE_DIR, 'extend/cells/base'))
+          end
         end
       end
     end
