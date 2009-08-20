@@ -1,4 +1,7 @@
-require 'rubygems'
+unless defined?(Palmade)
+  raise "Please load palmade_extensions first!"
+end
+
 require 'logger'
 require 'fileutils'
 
@@ -11,16 +14,6 @@ unless defined?(PALMADE_DEFAULT_LOGGER)
   PALMADE_DEFAULT_LOGGER.level = Logger::DEBUG
 end
 
-unless defined?(Palmade::VERSION)
-  PALMADE_EXT_RELATIVE_DIR = File.join(ASSET_PACKAGER_ROOT_DIR, '../palmade_extensions')
-  if File.exists?(File.join(PALMADE_EXT_RELATIVE_DIR, 'lib/palmade/palmade_extensions.rb'))
-    require File.join(PALMADE_EXT_RELATIVE_DIR, 'lib/palmade/palmade_extensions')
-  else
-    gem 'palmade_extensions'
-    require 'palmade/palmade_extensions'
-  end
-end
-
 module Palmade
   module AssetPackager
     autoload :AssetBase, File.join(ASSET_PACKAGER_LIB_PALMADE_DIR, 'asset_packager/asset_base')
@@ -30,7 +23,7 @@ module Palmade
     autoload :Helpers, File.join(ASSET_PACKAGER_LIB_PALMADE_DIR, 'asset_packager/helpers')
     autoload :Manager, File.join(ASSET_PACKAGER_LIB_PALMADE_DIR, 'asset_packager/manager')
     autoload :RailsPackager, File.join(ASSET_PACKAGER_LIB_PALMADE_DIR, 'asset_packager/rails_packager')
-    
+
     COMPILED = 1
     COMPILED_Z = 2
   end
