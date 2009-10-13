@@ -28,3 +28,4 @@ module Palmade
     COMPILED_Z = 2
   end
 end
+
