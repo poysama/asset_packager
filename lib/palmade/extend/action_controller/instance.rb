@@ -5,8 +5,16 @@ class ActionController::Base
 
   helper_method :asset_manager, :asset_managers, :asset_in_production?, :asset_deflate_ok?
 
-  # TODO: Change this, not to depend on rails_extensions! (not so portable!)
-  before_render :asset_before_render_hook
+  if respond_to?(:before_render)
+    before_render :asset_before_render_hook
+  else
+    def render_with_asset_hook(*params, &block)
+      asset_before_render_hook(*params)
+      render_without_asset_hook(*params, &block)
+    end
+    alias :render_without_asset_hook :render
+    alias :render :render_with_asset_hook
+  end
 
   def asset_manager(create_if_needed = false)
     if defined?(@asset_manager)
@@ -67,8 +75,13 @@ class ActionController::Base
       asset_id = compute_rails_asset_id(source)
       source += '?' + asset_id unless asset_id.blank?
 
-      rur = request.relative_url_root
-      unless rur.nil? || rur.empty?
+      if request.respond_to?(:relative_url_root)
+        rur = request.relative_url_root
+      else
+        rur = ActionController::Base.relative_url_root
+      end
+
+      unless rur.nil? || rur.empty? || ActionController::Base.asset_skip_relative_url_root
         source = File.join(rur, source)
       end
 
@@ -122,9 +135,21 @@ class ActionController::Base
         # the code that follows was copied from layouts.rb of the ActionController code
         layout = nil
         options = params.first
-        template_with_options = options.is_a?(Hash)
-        if apply_layout?(template_with_options, options)
-          layout = pick_layout(template_with_options, options, nil)
+
+        if private_methods.include?('apply_layout?') || private_methods.include?(:apply_layout?)
+          template_with_options = options.is_a?(Hash)
+          if apply_layout?(template_with_options, options)
+            layout = pick_layout(template_with_options, options, nil)
+          end
+        else
+          extra_options = params[1]
+          if options.nil?
+            options = { :template => default_template, :layout => true }
+          elsif options == :update
+            options = extra_options.merge({ :update => true })
+          end
+          layout_template = pick_layout(options)
+          layout = layout_template.path_without_format_and_extension if layout_template
         end
 
         [ 'javascripts', 'stylesheets' ].each do |asset_type|
