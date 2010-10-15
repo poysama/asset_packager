@@ -39,7 +39,8 @@ spec/rails/public/javascripts/testing.with_dot.js
 spec/rails/public/stylesheets/available.css
 spec/rails/public/stylesheets/folder/stylesheet.custom.css
 spec/rails/public/stylesheets/simple.css
-spec/rails1_extensions.rb
+spec/rails2_tests/rails_extensions.rb
+spec/rails_extensions.rb
 spec/rails_packager.rb
 spec/spec_helper.rb
 spec/utils.rb

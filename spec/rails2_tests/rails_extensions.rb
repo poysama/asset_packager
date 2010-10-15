@@ -1,17 +1,19 @@
-require File.expand_path("../spec_helper", __FILE__)
+require File.expand_path(File.join(File.dirname(__FILE__), "../spec_helper"))
 
-gem 'actionpack', '1.13.6'
+gem 'actionpack', '2.3.8'
 require 'action_controller'
 require 'action_view'
 require 'ostruct'
 
 configuration = OpenStruct.new
 configuration.frameworks = [:action_controller, :action_view]
+rails_root = File.join(SPEC_ROOT, 'rails')
+
 Palmade::AssetPackager::Helpers.use(:RailsHelper, configuration)
 Palmade::AssetPackager::Helpers::RailsHelper.add_configuration_options(configuration)
-Palmade::AssetPackager::RailsPackager.new(File.dirname(__FILE__)).run('rails_attach')
+Palmade::AssetPackager::RailsPackager.new(rails_root).run('rails_attach')
 
-describe "ActionController 1.13.6" do
+describe "ActionController 2.3.8" do
   context "with AssetPackager extensions" do
 
     it "should have new configuration options" do
@@ -38,7 +40,7 @@ describe "ActionController 1.13.6" do
   end
 end
 
-describe "ActionView 1.13.6" do
+describe "ActionView 2.3.8" do
   context "with AssetPackager extensions" do
 
     RAILS_ENV = "production"
@@ -61,9 +63,20 @@ describe "ActionView 1.13.6" do
       end
     end
 
-    it "should render individual javascripts" do
-      @view.javascript_include('base')
-      @view.javascript_tags.should == "<script src=\"/javascripts/base.js\" type=\"text/javascript\"></script>"
+    it "should render regular assets" do
+      @view.javascript_include('some_regular_js')
+      @view.stylesheet_include('some_regular_css')
+      @view.javascript_tags.should == "<script src=\"/javascripts/some_regular_js.js\" type=\"text/javascript\"></script>"
+      @view.stylesheet_tags.should == "<link href=\"/stylesheets/some_regular_css.css\" media=\"screen\"" +
+                                      " rel=\"stylesheet\" type=\"text/css\" />"
+    end
+
+    it "should render compiled assets" do
+      @view.javascript_include('package:base')
+      @view.stylesheet_include('package:base')
+      @view.javascript_tags.should == "<script src=\"/javascripts/compiled/base/base.js\" type=\"text/javascript\"></script>"
+      @view.stylesheet_tags.should == "<link href=\"/stylesheets/compiled/base/base.css\" media=\"screen\"" +
+                                      " rel=\"stylesheet\" type=\"text/css\" />"
     end
 
   end
