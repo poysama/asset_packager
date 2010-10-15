@@ -65,7 +65,7 @@ class ActionController::Base
   end
 
   def compute_public_path(source, dir = nil, ext = nil, options = { })
-    options = options.stringify_keys
+    options = Palmade::AssetPackager::Utils.stringify_keys(options)
     options['use_asset_host'] = true unless options.include?('use_asset_host')
 
     source += ".#{ext}" if !ext.nil? && File.extname(source).blank?

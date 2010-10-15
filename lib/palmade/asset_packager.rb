@@ -21,6 +21,7 @@ module Palmade
     autoload :Helpers, File.join(ASSET_PACKAGER_LIB_PALMADE_DIR, 'asset_packager/helpers')
     autoload :Manager, File.join(ASSET_PACKAGER_LIB_PALMADE_DIR, 'asset_packager/manager')
     autoload :RailsPackager, File.join(ASSET_PACKAGER_LIB_PALMADE_DIR, 'asset_packager/rails_packager')
+    autoload :Utils, File.join(ASSET_PACKAGER_LIB_PALMADE_DIR, 'asset_packager/utils')
 
     COMPILED = 1
     COMPILED_Z = 2

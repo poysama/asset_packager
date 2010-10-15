@@ -69,7 +69,8 @@ class ActionView::Base
   def spider_am(asset_type, asset_options = { })
     # only get the instance asset_manager, to set the rendered flag properly
     # the commented version above, is not thread-safe!!!
-    asset_manager.nil? ? [ ] : asset_manager.find_assets(asset_type, asset_options.stringify_keys)
+    asset_manager.nil? ? [ ] :
+      asset_manager.find_assets(asset_type, Palmade::AssetPackager::Utils.stringify_keys(asset_options))
   end
 
   # WATCH OUT!!!
