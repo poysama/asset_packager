@@ -23,7 +23,7 @@ module Palmade::AssetPackager
 
     def delete
       sources.keys.each do |package|
-        delete_package(package)
+        destroy_package(package)
       end
     end
   end

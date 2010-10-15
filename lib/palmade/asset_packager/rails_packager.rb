@@ -12,12 +12,33 @@ module Palmade::AssetPackager
       @logger ||= PALMADE_DEFAULT_LOGGER
     end
 
-    def default_conf_file
-      File.join(@rails_root, 'config/asset_packages.yml')
+    def run(argv)
+      logger.debug("** Initialize AssetPackager::Base")
+      initialize_asset_packager
+
+      case (argv.is_a?(Array) ? argv[0] : argv)
+      when 'build', nil
+        build
+      when 'rebuild'
+        rebuild
+      when 'delete'
+        delete
+      when 'rails_attach'
+        rails_attach
+      else
+        raise UnknownCommand, "Unknown command (#{argv[0]})"
+      end
     end
 
-    def default_conf_dir
-      File.join(@rails_root, 'config/asset_packages')
+    def initialize_asset_packager
+      @asset_packager = Palmade::AssetPackager::Base.new(@logger)
+      @asset_packager.asset_root = File.join(@rails_root, 'public')
+
+      if File.exists?(default_conf_file)
+        @asset_packager.build_package_list(default_conf_file)
+      elsif File.exists?(default_conf_dir)
+        @asset_packager.build_package_list(default_conf_dir, true)
+      end
     end
 
     def build
@@ -35,37 +56,20 @@ module Palmade::AssetPackager
       @asset_packager.delete
     end
 
-    def run(argv)
-      logger.debug("** Initialize AssetPackager::Base")
-      @asset_packager = Palmade::AssetPackager::Base.new(@logger)
-      @asset_packager.asset_root = File.join(@rails_root, 'public')
-
-      if File.exists?(default_conf_file)
-        @asset_packager.build_package_list(default_conf_file)
-      elsif File.exists?(default_conf_dir)
-        @asset_packager.build_package_list(default_conf_dir, true)
-      end
-
-      case (argv.is_a?(Array) ? argv[0] : argv)
-      when 'build', nil
-        build
-      when 'rebuild'
-        rebuild
-      when 'delete'
-        delete
-      when 'rails_attach'
-        rails_attach
-      else
-        raise UnknownCommand, "Unknown command (#{argv[0]})"
-      end
-    end
-
     def rails_attach
       if defined?(ActionController::Base)
         ActionController::Base.rails_asset_packager = self
       else
         raise Error, "ActionController::Base not loaded"
       end
+    end
+
+    def default_conf_file
+      File.join(@rails_root, 'config/asset_packages.yml')
+    end
+
+    def default_conf_dir
+      File.join(@rails_root, 'config/asset_packages')
     end
 
     def create_am(controller)

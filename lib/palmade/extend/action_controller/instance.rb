@@ -75,7 +75,9 @@ class ActionController::Base
       asset_id = compute_rails_asset_id(source)
       source += '?' + asset_id unless asset_id.blank?
 
-      if request.respond_to?(:relative_url_root)
+      if request.nil?
+        rur = nil
+      elsif request.respond_to?(:relative_url_root)
         rur = request.relative_url_root
       else
         rur = ActionController::Base.relative_url_root

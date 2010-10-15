@@ -22,7 +22,7 @@ class ActionController::Base
         end
       end
     end
-    
+
     def asset_managers
       asset_managers = [ ]
       asset_managers << @asset_manager if defined?(@asset_manager) && !@asset_manager.nil?
@@ -36,15 +36,15 @@ class ActionController::Base
     def javascript_include(*sources)
       asset_include('javascripts', *sources)
     end
-    
+
     def stylesheet_include(*sources)
       asset_include('stylesheets', *sources)
     end
-    
+
     def before_filter_javascript(*sources)
       before_filter { |cont| cont.javascript_include(*sources) }
     end
-    
+
     def before_filter_stylesheet(*sources)
       before_filter { |cont| cont.stylesheet_include(*sources) }
     end

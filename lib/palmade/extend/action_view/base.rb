@@ -40,6 +40,7 @@ class ActionView::Base
     end
 
     assets = spider_am(asset_type, asset_options)
+
     assets.collect do |asset|
       asset.rendered = true
 
