@@ -1,0 +1,8 @@
+base:
+  javascripts:
+    - testing.with_dot
+    - regular_file
+    - complete.js
+  stylesheets:
+    - folder/stylesheet.custom.css
+    - simple
