@@ -20,6 +20,7 @@ module Palmade
     autoload :BaseParser, File.join(ASSET_PACKAGER_LIB_PALMADE_DIR, 'asset_packager/base_parser')
     autoload :Helpers, File.join(ASSET_PACKAGER_LIB_PALMADE_DIR, 'asset_packager/helpers')
     autoload :Manager, File.join(ASSET_PACKAGER_LIB_PALMADE_DIR, 'asset_packager/manager')
+    autoload :Mixins, File.join(ASSET_PACKAGER_LIB_PALMADE_DIR, 'asset_packager/mixins')
     autoload :RailsPackager, File.join(ASSET_PACKAGER_LIB_PALMADE_DIR, 'asset_packager/rails_packager')
     autoload :Utils, File.join(ASSET_PACKAGER_LIB_PALMADE_DIR, 'asset_packager/utils')
 

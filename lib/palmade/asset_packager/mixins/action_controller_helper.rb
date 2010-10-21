@@ -1,9 +1,17 @@
-class ActionController::Base
-  @@rails_asset_packager = nil
-  cattr_accessor :rails_asset_packager
+module Palmade::AssetPackager
+  module Mixins::ActionControllerHelper
 
-  class << self
-    attr_reader :default_assets
+    def self.extended(base)
+      base.class_eval do
+        @@rails_asset_packager = nil
+        cattr_accessor :rails_asset_packager
+      end
+
+      class << base
+        attr_reader :default_assets
+        alias_method_chain :process, :asset_packager
+      end
+    end
 
     def asset_manager(su = false, create_if_needed = false)
       if su
@@ -66,13 +74,10 @@ class ActionController::Base
       end
     end
 
-    protected
-
     def process_with_asset_packager(*args)
       asset_before_process_hook(*args)
       process_without_asset_packager(*args)
     end
-    alias_method_chain :process, :asset_packager
 
     private
 
@@ -90,5 +95,6 @@ class ActionController::Base
         @processed_default_assets = true
       end
     end
+
   end
 end

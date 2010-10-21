@@ -1,16 +1,17 @@
-module Palmade::AssetPackager::Helpers
-  module RailsHelper
+module Palmade::AssetPackager
+  module Helpers::RailsHelper
     def self.setup(configuration)
       if configuration.frameworks.include?(:action_controller) &&
         configuration.frameworks.include?(:action_view)
-        require(File.join(ASSET_PACKAGER_LIB_PALMADE_DIR, 'extend/action_controller/base'))
-        require(File.join(ASSET_PACKAGER_LIB_PALMADE_DIR, 'extend/action_controller/instance'))
-        require(File.join(ASSET_PACKAGER_LIB_PALMADE_DIR, 'extend/action_view/base'))
+
+        ActionController::Base.send(:extend, Mixins::ActionControllerHelper)
+        ActionController::Base.send(:include, Mixins::ActionControllerInstanceHelper)
+        ActionView::Base.send(:include, Mixins::ActionViewHelper)
 
         # include cell extensions
         configuration.after_initialize do
           if defined?(Palmade::Cells)
-            require(File.join(ASSET_PACKAGER_LIB_PALMADE_DIR, 'extend/cells/base'))
+            Palmade::Cells::Base.send(:include, Mixins::CellsHelper)
           end
         end
       end

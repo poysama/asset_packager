@@ -1,5 +1,6 @@
-module Palmade::Cells
-  class Base
+module Palmade::AssetPackager
+  module Mixins::CellsHelper
+
     def javascript_include(*sources)
       @controller.asset_include('javascripts', *sources)
     end
@@ -7,5 +8,6 @@ module Palmade::Cells
     def stylesheet_include(*sources)
       @controller.asset_include('stylesheets', *sources)
     end
+
   end
 end
