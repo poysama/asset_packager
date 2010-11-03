@@ -8,6 +8,7 @@ module Palmade::AssetPackager
       end
 
       class << base
+        @default_assets = { }
         attr_reader :default_assets
         alias_method_chain :process, :asset_packager
       end
@@ -83,7 +84,6 @@ module Palmade::AssetPackager
 
     # class-level process hook (should only be parsed once / per class load)
     def asset_before_process_hook(*args)
-      @default_assets ||= { }
       unless defined?(@processed_default_assets) && @processed_default_assets
         [ 'stylesheets', 'javascripts' ].each do |asset_type|
           asset_controller = 'controllers/' + controller_path

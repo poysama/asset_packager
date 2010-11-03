@@ -150,12 +150,27 @@ module Palmade::AssetPackager
               layout = pick_layout(template_with_options, options, nil)
             end
           else
-            extra_options = params[1]
+            extra_options = params[1] || {}
             if options.nil?
               options = { :template => default_template, :layout => true }
             elsif options == :update
               options = extra_options.merge({ :update => true })
+            elsif options.is_a?(String) || options.is_a?(Symbol)
+              case options.to_s.index('/')
+              when 0
+                extra_options[:file] = options
+              when nil
+                extra_options[:action] = options
+              else
+                extra_options[:template] = options
+              end
+
+              options = extra_options
+            elsif !options.is_a?(Hash)
+              extra_options[:partial] = options
+              options = extra_options
             end
+
             layout_template = pick_layout(options)
             layout = layout_template.path_without_format_and_extension if layout_template
           end
