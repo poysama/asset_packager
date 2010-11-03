@@ -3,13 +3,12 @@ module Palmade::AssetPackager
 
     def self.extended(base)
       base.class_eval do
-        @@rails_asset_packager = nil
         cattr_accessor :rails_asset_packager
+        cattr_accessor :default_assets
+        self.default_assets = {}
       end
 
       class << base
-        @default_assets = { }
-        attr_reader :default_assets
         alias_method_chain :process, :asset_packager
       end
     end
@@ -88,8 +87,8 @@ module Palmade::AssetPackager
         [ 'stylesheets', 'javascripts' ].each do |asset_type|
           asset_controller = 'controllers/' + controller_path
           if rails_asset_packager.asset_exists?(asset_type, asset_controller)
-            @default_assets[asset_type] ||= [ ]
-            @default_assets[asset_type] << asset_controller
+            default_assets[asset_type] ||= [ ]
+            default_assets[asset_type] << asset_controller
           end
         end
         @processed_default_assets = true

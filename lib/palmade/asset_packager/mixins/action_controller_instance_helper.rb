@@ -184,9 +184,8 @@ module Palmade::AssetPackager
             end
 
             # check for controller assets
-            if self.class.default_assets[asset_type] &&
-              self.class.default_assets[asset_type].size > 0
-              asset_include(asset_type, self.class.default_assets[asset_type], :set => 'default')
+            if default_assets[asset_type] && default_assets[asset_type].size > 0
+              asset_include(asset_type, default_assets[asset_type], :set => 'default')
             end
 
             # check for action assets
