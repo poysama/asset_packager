@@ -15,6 +15,11 @@ lib/palmade/asset_packager/helpers.rb
 lib/palmade/asset_packager/helpers/rails_helper.rb
 lib/palmade/asset_packager/jsmin.rb
 lib/palmade/asset_packager/manager.rb
+lib/palmade/asset_packager/mixins.rb
+lib/palmade/asset_packager/mixins/action_controller_helper.rb
+lib/palmade/asset_packager/mixins/action_controller_instance_helper.rb
+lib/palmade/asset_packager/mixins/action_view_helper.rb
+lib/palmade/asset_packager/mixins/cells_helper.rb
 lib/palmade/asset_packager/rails_packager.rb
 lib/palmade/asset_packager/types.rb
 lib/palmade/asset_packager/types/abstract.rb
@@ -23,10 +28,6 @@ lib/palmade/asset_packager/types/image.rb
 lib/palmade/asset_packager/types/javascript.rb
 lib/palmade/asset_packager/types/stylesheet.rb
 lib/palmade/asset_packager/utils.rb
-lib/palmade/extend/action_controller/base.rb
-lib/palmade/extend/action_controller/instance.rb
-lib/palmade/extend/action_view/base.rb
-lib/palmade/extend/cells/base.rb
 spec/rails/config/asset_packages.yml
 spec/rails/correct/javascripts/compiled/base/base.js
 spec/rails/correct/javascripts/compiled/base/base.js.z

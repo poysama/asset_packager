@@ -4,7 +4,7 @@ module Palmade::AssetPackager
     def self.extended(base)
       base.class_eval do
         cattr_accessor :rails_asset_packager
-        cattr_accessor :default_assets
+        class_inheritable_accessor :default_assets
         self.default_assets = {}
       end
 
