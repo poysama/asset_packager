@@ -111,12 +111,8 @@ module Palmade::AssetPackager
     end
 
     def compute_rails_asset_id(source)
-      unless asset_in_production?
-        ENV["RAILS_ASSET_ID"] ||
-          File.mtime("#{RAILS_ROOT}/public/#{source}").to_i.to_s rescue ""
-      else
-        nil
-      end
+      ENV["RAILS_ASSET_ID"] ||
+        File.mtime("#{RAILS_ROOT}/public/#{source}").to_i.to_s rescue ""
     end
 
     protected
