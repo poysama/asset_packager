@@ -26,7 +26,7 @@ module Palmade::AssetPackager
       if defined?(@asset_manager)
         @asset_manager
       elsif create_if_needed
-        returning @asset_manager = rails_asset_packager.create_instance_am(self) do |am|
+        (@asset_manager = rails_asset_packager.create_instance_am(self)).tap do |am|
           am.inherit_assets(self.class.asset_managers, true)
         end unless rails_asset_packager.nil?
       else
