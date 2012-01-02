@@ -1,19 +1,14 @@
-require File.expand_path(File.join(File.dirname(__FILE__), "../spec_helper"))
-
-gem 'actionpack', '2.3.8'
-require 'action_controller'
-require 'action_view'
-require 'ostruct'
+require "spec/spec_helper"
 
 configuration = OpenStruct.new
 configuration.frameworks = [:action_controller, :action_view]
-rails_root = File.join(SPEC_ROOT, 'rails')
+rails_root = File.join('spec', 'rails')
 
 Palmade::AssetPackager::Helpers.use(:RailsHelper, configuration)
 Palmade::AssetPackager::Helpers::RailsHelper.add_configuration_options(configuration)
 Palmade::AssetPackager::RailsPackager.new(rails_root).run('rails_attach')
 
-describe "ActionController 2.3.8" do
+describe "ActionController" do
   context "with AssetPackager extensions" do
 
     it "should have new configuration options" do
@@ -40,7 +35,7 @@ describe "ActionController 2.3.8" do
   end
 end
 
-describe "ActionView 2.3.8" do
+describe "ActionView" do
   context "with AssetPackager extensions" do
 
     RAILS_ENV = "production"
@@ -67,16 +62,14 @@ describe "ActionView 2.3.8" do
       @view.javascript_include('some_regular_js')
       @view.stylesheet_include('some_regular_css')
       @view.javascript_tags.should == "<script src=\"/javascripts/some_regular_js.js\" type=\"text/javascript\"></script>"
-      @view.stylesheet_tags.should == "<link href=\"/stylesheets/some_regular_css.css\" media=\"screen\"" +
-                                      " rel=\"stylesheet\" type=\"text/css\" />"
+      @view.stylesheet_tags.should match /<link href="\/stylesheets\/some_regular_css.css" media="screen" rel="Stylesheet" type="text\/css" \/>/i
     end
 
     it "should render compiled assets" do
       @view.javascript_include('package:base')
       @view.stylesheet_include('package:base')
       @view.javascript_tags.should == "<script src=\"/javascripts/compiled/base/base.js\" type=\"text/javascript\"></script>"
-      @view.stylesheet_tags.should == "<link href=\"/stylesheets/compiled/base/base.css\" media=\"screen\"" +
-                                      " rel=\"stylesheet\" type=\"text/css\" />"
+      @view.stylesheet_tags.should match /<link href="\/stylesheets\/compiled\/base\/base.css" media="screen" rel="Stylesheet" type="text\/css" \/>/i
     end
 
   end
