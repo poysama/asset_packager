@@ -1,4 +1,4 @@
-require "spec/spec_helper"
+require "spec_helper"
 
 configuration = OpenStruct.new
 configuration.frameworks = [:action_controller, :action_view]
